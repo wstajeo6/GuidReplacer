@@ -1,0 +1,58 @@
+﻿<Window x:Class="TextReplacer.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Text Replacer 1.0" Height="450" Width="800"
+        MinHeight="450" MinWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="10" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style x:Key="Text" TargetType="TextBox">
+                    <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                    <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+                    <Setter Property="AcceptsReturn" Value="True" />
+                    <Setter Property="AcceptsTab" Value="True" />
+                </Style>
+            </Grid.Resources>
+            <StackPanel Margin="0,0,0,5" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+                <StackPanel>
+                    <Label Content="Configuration:" Width="Auto" HorizontalAlignment="Left" />
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox Height="20" Width="200" HorizontalAlignment="Left" ItemsSource="{Binding Configurations}" SelectedItem="{Binding CurrentConfiguration}"/>
+                        <Button Width="40" Content="Edit" Margin="15,0,0,0" Command="{Binding EditCommand}"/>
+                        <Button Width="70" Content="Reload All" Margin="7,0,0,0" Command="{Binding ReloadAllCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Regex:" Width="Auto" HorizontalAlignment="Left" />
+                    <TextBox  Height="20" Text="{Binding RegexValue}"></TextBox>
+                </StackPanel>
+            </StackPanel>
+            <Button Content=">>" Grid.Row="1" Grid.Column="1" Height="30" Margin="5" Command="{Binding ReplaceCommand}" />
+            <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource Text}" Text="{Binding SourceText}"/>
+            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource Text}" IsReadOnly="True" Text="{Binding ResultText}" />
+        </Grid>
+    </Grid>
+</Window>

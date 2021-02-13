@@ -1,0 +1,12 @@
+﻿{
+    "Configurations": [
+        {
+            "Name": "Cfg1",
+            "TextFunction": "blabla"
+        },
+        {
+            "Name": "Cfg2",
+            "TextFunction": "2blabla2"
+        }
+    ]
+}
