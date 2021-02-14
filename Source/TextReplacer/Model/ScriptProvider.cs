@@ -65,7 +65,7 @@ namespace TextReplacer.Model
                 var options = ScriptOptions.Default
                     .AddReferences(globalsType.Assembly)
                     .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release);
-                var fullScript = $"{TextScript};";
+                var fullScript = TextScript;
                 scriptRunner = await Task.Run(() => CSharpScript.Create<TResult>(fullScript, options, globalsType).CreateDelegate()).ConfigureAwait(false);
                 return new CompileResponse<ScriptRunner<TResult>>(scriptRunner, "Script compile successful");
             }
