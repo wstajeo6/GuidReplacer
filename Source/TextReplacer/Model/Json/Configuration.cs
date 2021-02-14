@@ -5,7 +5,7 @@
         #region Public Properties
 
         public string Name { get; set; }
-        public string TextFunction { get; set; }
+        public string TextScript { get; set; }
 
         #endregion
     }

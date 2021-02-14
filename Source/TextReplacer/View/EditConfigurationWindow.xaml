@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="10" />
             <RowDefinition Height="1*" />
+            <RowDefinition Height="35" />
             <RowDefinition Height="10" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -29,13 +30,19 @@
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top">
                     <Label Content="Name"/>
-                    <TextBox />
+                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                 </DockPanel>
                 <DockPanel DockPanel.Dock="Top">
                     <Label DockPanel.Dock="Top" Content="Text function"/>
-                    <TextBox DockPanel.Dock="Bottom" Style="{StaticResource Text}"></TextBox>
+                    <TextBox DockPanel.Dock="Bottom" Style="{StaticResource Text}" Text="{Binding TextScript, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AcceptsReturn="True" AcceptsTab="True" />
                 </DockPanel>
             </DockPanel>
         </Grid>
+        <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+            <Button Width="75" Height="25" Content="Test Compile" Margin="0,0,10,0" Command="{Binding TestCompileCommand}"/>
+            <Button Width="75" Height="25" Content="Save" Margin="0,0,10,0" Command="{Binding SaveCommand}"/>
+            <Button Width="75" Height="25" Content="Cancel" Command="{Binding CancelCommand}"/>
+        </StackPanel>
     </Grid>
 </Window>

@@ -12,18 +12,15 @@ namespace TextReplacer.ViewModel
     {
         #region Private Fields
 
-        private readonly IDialogProvider dialogProvider;
-
         private readonly List<Configuration> configurationModels;
+        private readonly IDialogProvider dialogProvider;
         private BindingList<ConfigurationVM> configurations;
 
+        private string regexValue;
+        private string resultText;
         private string sourceText;
 
-        private string regexValue;
-
-        private string resultText;
-
-        #endregion
+        #endregion Private Fields
 
         #region Public Constructors
 
@@ -40,14 +37,38 @@ namespace TextReplacer.ViewModel
             LoadConfigurationModels(configurationModels);
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Public Properties
 
-        public string SourceText
+        private ConfigurationVM currentConfiguration;
+
+        public BindingList<ConfigurationVM> Configurations
         {
-            get => sourceText;
-            set => SetProperty(ref sourceText, value);
+            get => configurations;
+            set => SetProperty(ref configurations, value);
+        }
+
+        public ConfigurationVM CurrentConfiguration
+        {
+            get => currentConfiguration;
+            set => SetProperty(ref currentConfiguration, value);
+        }
+
+        public Action<ConfigurationVM> EditAction { get; set; }
+
+        public RelayCommand EditCommand { get; }
+   
+        public Action<MainVM> ReloadAllAction { get; set; }
+
+        public RelayCommand ReloadAllCommand { get; }
+
+        public RelayCommand ReplaceCommand { get; }
+
+        public string ResultText
+        {
+            get => resultText;
+            set => SetProperty(ref resultText, value);
         }
 
         public string RegexValue
@@ -56,33 +77,16 @@ namespace TextReplacer.ViewModel
             set => SetProperty(ref regexValue, value);
         }
 
-        public string ResultText
-        {
-            get => resultText;
-            set => SetProperty(ref resultText, value);
-        }
-
-        public ConfigurationVM CurrentConfiguration { get; }
-
-        public Action<ConfigurationVM> EditAction { get; set; }
-
-        public Action<MainVM> ReloadAllAction { get; set; }
-
-        public RelayCommand EditCommand { get; }
-
-        public RelayCommand ReloadAllCommand { get; }
 
         public Action<List<Configuration>> SaveAction { get; set; }
 
-        public BindingList<ConfigurationVM> Configurations
+        public string SourceText
         {
-            get => configurations;
-            set => SetProperty(ref configurations, value);
+            get => sourceText;
+            set => SetProperty(ref sourceText, value);
         }
 
-        public RelayCommand ReplaceCommand { get; }
-
-        #endregion
+        #endregion Public Properties
 
         #region Public Methods
 
@@ -97,9 +101,16 @@ namespace TextReplacer.ViewModel
             }
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Private Methods
+
+        private void Edit()
+        {
+            Debug.Assert(EditAction != null);
+            Debug.Assert(CurrentConfiguration != null);
+            EditAction.Invoke(CurrentConfiguration);
+        }
 
         private void ReloadAll()
         {
@@ -112,19 +123,12 @@ namespace TextReplacer.ViewModel
             CurrentConfiguration.ReplaceText(SourceText);
         }
 
-        private void Edit()
-        {
-            Debug.Assert(EditAction != null);
-            Debug.Assert(CurrentConfiguration != null);
-            EditAction.Invoke(CurrentConfiguration);
-        }
-
         private void Save()
         {
             Debug.Assert(SaveAction != null);
             SaveAction.Invoke(configurationModels);
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

@@ -20,7 +20,7 @@ namespace TextReplacer.ViewModel
         private string name;
         private string textScript;
 
-        private ScriptRunner<string> scriptRunner;
+        
 
         #endregion
 
@@ -28,10 +28,13 @@ namespace TextReplacer.ViewModel
 
         public ConfigurationVM(IDialogProvider dialogProvider, Configuration configurationModel)
         {
-            SaveCommand = new RelayCommand(Save, Validate);
+            TestCompileCommand = new RelayCommand(TestCompile, ValidateTextScript);
+            SaveCommand = new RelayCommand(Save, () => ValidateName() && ValidateTextScript());
             CancelCommand = new RelayCommand(Cancel);
             this.dialogProvider = dialogProvider;
             this.configurationModel = configurationModel;
+            name = configurationModel.Name;
+            textScript = configurationModel.TextScript; 
         }
 
         #endregion
@@ -50,28 +53,17 @@ namespace TextReplacer.ViewModel
             set => SetProperty(ref textScript, value);
         }
 
+        public RelayCommand TestCompileCommand { get; set; }
+
         public RelayCommand SaveCommand { get; }
 
         public RelayCommand CancelCommand { get; }
 
         public Action SaveAction { get; set; }
 
-        public Action CancelAction { get; set; }
+        public Action CloseAction { get; set; }
 
-        #endregion
-
-        #region Private Properties
-
-        private ScriptRunner<string> ScriptRunner
-        {
-            get
-            {
-                if (scriptRunner is null)
-                    CompileTextScript();
-                return scriptRunner;
-            }
-            set => scriptRunner = value;
-        }
+        private ScriptProvider<TextReplaceScriptGlobals, string> scriptProvider;
 
         #endregion
 
@@ -81,8 +73,13 @@ namespace TextReplacer.ViewModel
         {
             try
             {
-                var resultText = RunScript(sourceText);
-                return resultText.Result;
+                var globals = new TextReplaceScriptGlobals(sourceText);
+                var runResponse = scriptProvider.Run(globals).Result;
+
+                if (runResponse.Exception != null)
+                    throw runResponse.Exception;
+
+                return runResponse.Result;
             }
             catch (Exception ex)
             {
@@ -105,56 +102,51 @@ namespace TextReplacer.ViewModel
             base.OnPropertyChanged(name);
         }
 
-        protected bool Validate() =>
-            !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(TextScript);
+        protected bool ValidateName() => 
+            !string.IsNullOrWhiteSpace(Name);
+
+        protected bool ValidateTextScript() => 
+            !string.IsNullOrWhiteSpace(TextScript);
+
+        protected void TestCompile()
+        {
+            var scriptProvider = new ScriptProvider<TextReplaceScriptGlobals, string>(TextScript);
+            var compileResponse = scriptProvider.Compile().Result;
+
+            if(compileResponse.Exception != null)
+                dialogProvider.ShowMessage(compileResponse.Exception.Message, "Script compile error", DialogIcon.Error);
+            else
+                dialogProvider.ShowMessage("Script compile successful", "Script compile successful", DialogIcon.Information);
+
+        }
+        protected bool WasTextScriptChanged => configurationModel.TextScript != TextScript;
 
         protected void Save()
         {
-            if (!CompileTextScript())
-                return;
+            if (WasTextScriptChanged)
+                scriptProvider = new ScriptProvider<TextReplaceScriptGlobals, string>(TextScript);
 
             configurationModel.Name = Name;
-            configurationModel.TextFunction = TextScript;
+            configurationModel.TextScript = TextScript;
             Debug.Assert(SaveAction != null);
             SaveAction.Invoke();
+            Close();
+        }
+
+        // TODO Test Compile should test run the function to see if the text script is a proper function with string result (contains return value of type string).
+        // Test global = "";
+
+        protected void Close()
+        {
+            Debug.Assert(CloseAction != null);
+            CloseAction.Invoke();
         }
 
         protected void Cancel()
         {
-            Debug.Assert(CancelAction != null);
-            CancelAction.Invoke();
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private async Task<string> RunScript(string sourceText)
-        {
-            var globals = new TextReplaceScriptGlobals
-            {
-                SourceText = sourceText
-            };
-            return await ScriptRunner.Invoke(globals);
-        }
-
-        private bool CompileTextScript()
-        {
-            try
-            {
-                var globalsType = typeof(TextReplaceScriptGlobals);
-                var options = ScriptOptions.Default
-                    .AddReferences(globalsType.Assembly)
-                    .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release);
-                var fullScript = ($"{TextScript};");
-                ScriptRunner = CSharpScript.Create<string>(fullScript, options, globalsType).CreateDelegate();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                dialogProvider.ShowMessage(ex.Message, "Script compile error", DialogIcon.Error);
-                return false;
-            }
+            Name = configurationModel.Name;
+            TextScript = configurationModel.TextScript;
+            Close();
         }
 
         #endregion

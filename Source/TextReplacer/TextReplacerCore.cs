@@ -81,12 +81,12 @@ namespace TextReplacer
         private void Edit(ConfigurationVM configurationVM)
         {
             var editConfigurationWindow = new EditConfigurationWindow();
-            configurationVM.CancelAction = editConfigurationWindow.Close;
+            configurationVM.CloseAction = editConfigurationWindow.Close;
 
             editConfigurationWindow.Initialize(configurationVM);
             editConfigurationWindow.ShowDialog();
 
-            configurationVM.CancelAction = null;
+            configurationVM.CloseAction = null;
         }
 
         private void Save(List<Configuration> configurations)

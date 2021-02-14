@@ -116,7 +116,9 @@
     <Compile Include="Common\Implementation\DialogProvider.cs" />
     <Compile Include="Model\Json\Configuration.cs" />
     <Compile Include="Model\Json\TextReplacerConfiguration.cs" />
+    <Compile Include="Model\BaseResponse.cs" />
     <Compile Include="Model\TextReplaceScriptGlobals.cs" />
+    <Compile Include="Model\ScriptProvider.cs" />
     <Compile Include="TextReplacerCore.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
     <Compile Include="ViewModel\ConfigurationVM.cs" />

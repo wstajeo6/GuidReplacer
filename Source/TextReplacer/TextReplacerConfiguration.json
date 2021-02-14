@@ -2,11 +2,11 @@
     "Configurations": [
         {
             "Name": "Cfg1",
-            "TextFunction": "blabla"
+            "TextScript": "blabla"
         },
-        {
-            "Name": "Cfg2",
-            "TextFunction": "2blabla2"
-        }
+      {
+        "Name": "Cfg2",
+        "TextScript": "2blabla2"
+      }
     ]
 }
